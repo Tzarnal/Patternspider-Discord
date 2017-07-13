@@ -1,0 +1,47 @@
+﻿using System.IO;
+using Newtonsoft.Json;
+
+namespace PatternSpider_Discord.Plugins.Weather
+{
+    class ApiKeys
+    {
+        public static string DataPath = "Configuration/Weather/";
+        public static string DataFileName = "Weather API Keys.json";
+
+        public static string FullPath
+        {
+            get { return DataPath + DataFileName; }
+
+        }
+
+        public string ForecastIoKey;
+        public string MapQuestKey;
+        public string BingKey;
+
+        public ApiKeys()
+        {
+            ForecastIoKey = "Dummy-Key-0123456";
+            MapQuestKey = "Dummy-Key-0123456";
+            BingKey = "Dummy-Key-0123456";
+        }
+
+        public void Save()
+        {
+            var data = JsonConvert.SerializeObject(this, Formatting.Indented);
+
+            if (!Directory.Exists(DataPath))
+            {
+                Directory.CreateDirectory(DataPath);
+            }
+
+            File.WriteAllText(FullPath, data);
+        }
+
+        public static ApiKeys Load()
+        {
+            var data = File.ReadAllText(FullPath);
+            return JsonConvert.DeserializeObject<ApiKeys>(data);
+        }
+    }
+
+}
