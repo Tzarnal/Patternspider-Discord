@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Discord.WebSocket;
 
 namespace PatternSpider_Discord.Plugins
 {
@@ -7,7 +9,7 @@ namespace PatternSpider_Discord.Plugins
         string Name { get; }
         List<string> Commands { get; }
 
-        string Command();
-        string Message();
+        Task Command(string command, string messsage, SocketMessage m);
+        Task Message(string messsage, SocketMessage m);
     }
 }

@@ -8,12 +8,12 @@ namespace PatternSpider_Discord.Plugins
     public class PluginManager
     {
         private List<IPatternSpiderPlugin> _plugins;
-        private char _comandSymbol;
+        private char _commandSymbol;
 
         public PluginManager(char commandSymbol)
         {
             _plugins = new List<IPatternSpiderPlugin>();
-            _comandSymbol = commandSymbol;
+            _commandSymbol = commandSymbol;
 
             //Load Plugins through reflection.
             System.Reflection.Assembly ass = System.Reflection.Assembly.GetEntryAssembly();
@@ -28,35 +28,24 @@ namespace PatternSpider_Discord.Plugins
         }
 
         public async Task DispatchMessage(SocketMessage m)
-        {            
+        {
             foreach (IPatternSpiderPlugin plugin in _plugins)
             {
-                var response = plugin.Message();
-
-                if (response != null)
-                {
-                    await m.Channel.SendMessageAsync(response);
-                }
+                await plugin.Message(m.Content, m);
             }
 
-
-            if (m.Content.First() != _comandSymbol)
+            if (m.Content.First() != _commandSymbol)
             {
                 return;
             }
 
-            var commandWord = m.Content.Split(' ').First().TrimStart(_comandSymbol);
+            var commandWord = m.Content.Split(' ').First().TrimStart(_commandSymbol);
 
             foreach (IPatternSpiderPlugin plugin in _plugins)
             {
                 if (plugin.Commands.Contains(commandWord))
                 {
-                    var response = plugin.Command();
-
-                    if (response != null)
-                    {
-                        await m.Channel.SendMessageAsync(response);
-                    }
+                    await plugin.Command(commandWord,m.Content,m);  
                 }                
             }
         }

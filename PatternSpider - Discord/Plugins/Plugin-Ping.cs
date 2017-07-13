@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Discord.WebSocket;
 
 
 namespace PatternSpider_Discord.Plugins
@@ -8,14 +10,13 @@ namespace PatternSpider_Discord.Plugins
         public string Name => "ping";
         public List<string> Commands=> new List<string>{"ping"};
 
-        public string Command()
+        public async Task Command(string command, string messsage, SocketMessage m)
         {
-            return "Pong";
+            await m.Channel.SendMessageAsync("Pong.");
         }
 
-        public string Message()
-        {
-            return null;
+        public async Task Message(string messsage, SocketMessage m)
+        {            
         }
     }
 }
