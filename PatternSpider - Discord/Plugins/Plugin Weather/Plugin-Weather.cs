@@ -121,8 +121,9 @@ namespace PatternSpider_Discord.Plugins.Weather
             await m.Channel.SendMessageAsync(finalResponse);
         }
 
-        public async Task Message(string messsage, SocketMessage m)
+        public Task Message(string messsage, SocketMessage m)
         {
+            return Task.CompletedTask;
         }
 
         private async Task<List<string>> WeatherToday(string location)

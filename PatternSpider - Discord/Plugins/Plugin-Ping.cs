@@ -15,8 +15,9 @@ namespace PatternSpider_Discord.Plugins
             await m.Channel.SendMessageAsync("Pong.");
         }
 
-        public async Task Message(string messsage, SocketMessage m)
-        {            
+        public Task Message(string messsage, SocketMessage m)
+        {
+            return Task.CompletedTask;
         }
     }
 }
