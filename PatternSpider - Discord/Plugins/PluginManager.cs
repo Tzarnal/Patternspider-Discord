@@ -8,8 +8,8 @@ namespace PatternSpider_Discord.Plugins
 {
     public class PluginManager
     {
-        private List<IPatternSpiderPlugin> _plugins;
-        private char _commandSymbol;
+        private readonly List<IPatternSpiderPlugin> _plugins;
+        private readonly char _commandSymbol;
 
         public PluginManager(char commandSymbol)
         {

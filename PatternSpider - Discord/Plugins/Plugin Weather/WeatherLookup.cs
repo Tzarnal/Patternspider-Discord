@@ -9,9 +9,9 @@ namespace PatternSpider_Discord.Plugins.Weather
 {
     class WeatherLookup
     {
-        private string _key;
-        private string _lat;
-        private string _long;
+        private readonly string _key;
+        private readonly string _lat;
+        private readonly string _long;
 
         public WeatherLookup(string key, float lat, float lon)
         {

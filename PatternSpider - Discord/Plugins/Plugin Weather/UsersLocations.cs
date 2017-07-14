@@ -8,11 +8,7 @@ namespace PatternSpider_Discord.Plugins.Weather
     {
         public static string DataPath = "Configuration/Weather/";
         public static string DataFileName = "User Locations.json";
-        public static string FullPath
-        {
-            get { return DataPath + DataFileName; }
-
-        }
+        public static string FullPath => DataPath + DataFileName;
 
         public Dictionary<string, string> UserLocations;
 

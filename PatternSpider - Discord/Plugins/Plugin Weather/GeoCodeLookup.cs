@@ -17,9 +17,8 @@ namespace PatternSpider_Discord.Plugins.Weather
 
     class GeoCodeLookup
     {
-        private string _key;
-
-        private Dictionary<string, Coordinates> _cache;
+        private readonly string _key;
+        private readonly Dictionary<string, Coordinates> _cache;
 
         public GeoCodeLookup(string key)
         {

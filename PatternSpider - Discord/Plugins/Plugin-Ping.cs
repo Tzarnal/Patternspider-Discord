@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Discord.WebSocket;
 
-
 namespace PatternSpider_Discord.Plugins
 {
     class PluginPing : IPatternSpiderPlugin
