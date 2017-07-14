@@ -21,7 +21,7 @@ namespace PatternSpider_Discord.Plugins.Mumble
                 new ServerEntry
                 {
                     Guild = "example server",
-                    DiscordChannel = "#xamplez",
+                    DiscordChannel = "xamplez",
                     MumbleCVP = "https://example.com/servers/cvp.json"
                 }
             };
