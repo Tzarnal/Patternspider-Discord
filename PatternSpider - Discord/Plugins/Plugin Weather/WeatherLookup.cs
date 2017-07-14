@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace PatternSpider_Discord.Plugins.Weather
 {
@@ -39,7 +40,8 @@ namespace PatternSpider_Discord.Plugins.Weather
             }
             catch (Exception e)
             {
-                Console.WriteLine($"{e.Message} -- Request: {requestString}");                
+                Log.Warning("Plugin-Weather: Weather API request failure. Request: {requestSTring}", requestString);
+                Log.Debug(e,"Plugin-Weather: Weather API request failure. Request: {requestSTring}", requestString);                                
                 return null;                
             }
             

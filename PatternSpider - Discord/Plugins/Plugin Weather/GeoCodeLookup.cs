@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace PatternSpider_Discord.Plugins.Weather
 {
@@ -49,7 +50,8 @@ namespace PatternSpider_Discord.Plugins.Weather
             }
             catch (Exception e)
             {
-                Console.WriteLine($"{e.Message} -- Request: {requestString}");
+                Log.Warning("Plugin-Weather: Geolocation API request failure. Request: {requestSTring}", requestString);
+                Log.Debug(e, "Plugin-Weather: Geolocation API request failure. Request: {requestSTring}", requestString);                
                 throw;
             }
 

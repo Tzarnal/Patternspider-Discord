@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using Serilog;
 
 namespace PatternSpider_Discord.Plugins
 {
@@ -25,6 +26,10 @@ namespace PatternSpider_Discord.Plugins
                     _plugins.Add((IPatternSpiderPlugin) ass.CreateInstance(ti.FullName));                    
                 }
             }
+
+            var pluginNames = _plugins.Select(plugin => plugin.Name).ToList();
+
+            Log.Information("PatternSpider: Loaded {plugins}", pluginNames);
         }
 
         public async Task DispatchMessage(SocketMessage m)

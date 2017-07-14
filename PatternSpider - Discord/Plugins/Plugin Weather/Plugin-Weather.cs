@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Serilog;
 
 namespace PatternSpider_Discord.Plugins.Weather
 {
@@ -28,6 +29,7 @@ namespace PatternSpider_Discord.Plugins.Weather
             }
             else
             {
+                Log.Warning("Weather: Could not load {0}, creating an empty one.", UsersLocations.FullPath);
                 _usersLocations = new UsersLocations();
                 _usersLocations.Save();
             }
@@ -38,11 +40,12 @@ namespace PatternSpider_Discord.Plugins.Weather
             }
             else
             {
+                Log.Warning("Weather: Could not load {0}, creating a default one.", ApiKeys.FullPath);
                 _apiKeys = new ApiKeys();
                 _apiKeys.Save();
             }
 
-            _lookup = new GeoCodeLookup(_apiKeys.MapQuestKey);
+            _lookup = new GeoCodeLookup(_apiKeys.MapQuestKey);            
         }
 
         public async Task Command(string command, string messsage, SocketMessage m)
@@ -137,27 +140,25 @@ namespace PatternSpider_Discord.Plugins.Weather
             }
             catch (Exception e)
             {
-                Console.WriteLine("Location Lookup failure: " + e.Message);
+                Log.Debug(e, "Plugin-Weather: Location Lookup failure");                                
                 if (!string.IsNullOrWhiteSpace(e.InnerException?.Message))
-                    Console.WriteLine("--> " + e.InnerException.Message);
+                    Log.Debug(e.InnerException, "Plugin-Weather: Location Lookup failure details");
 
                 return new List<string> { "Could not find " + location };
             }
 
             var weatherRequest = new WeatherLookup(_apiKeys.ForecastIoKey, coordinates.Latitude, coordinates.Longitude);
             WeatherData weather;
-
-            weather = await weatherRequest.Get();
-
+           
             try
             {
-
+                weather = await weatherRequest.Get();
             }
             catch (Exception e)
             {
-                Console.WriteLine("Weather Lookup failure: " + e.Message);
+                Log.Debug(e, "Plugin-Weather: Weather Lookup failure");                
                 if (e.InnerException != null && !string.IsNullOrWhiteSpace(e.InnerException.Message))
-                    Console.WriteLine("--> " + e.InnerException.Message);
+                    Log.Debug(e.InnerException, "Plugin-Weather: Weather Lookup failure details");                
 
                 return new List<string> { "Found " + coordinates.Name + " but could not find any weather there." };
             }

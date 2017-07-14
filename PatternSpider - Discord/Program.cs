@@ -19,21 +19,24 @@ namespace PatternSpider_Discord
             => new Program().MainAsync().GetAwaiter().GetResult();
 
         public async Task MainAsync()
-        {
-            LoadConfiguration();
-            _pluginManager = new PluginManager(_patternSpiderConfig.CommandSymbol);
-
+        {                       
             Log.Logger = new LoggerConfiguration()
+#if DEBUG
+                    .MinimumLevel.Verbose()
+#else
+                    .MinimumLevel.Information()
+#endif
                 .WriteTo.Console()
                 .CreateLogger();
 
+            LoadConfiguration();
+
+            _pluginManager = new PluginManager(_patternSpiderConfig.CommandSymbol);
+
             _client = new DiscordSocketClient();
 
-            _client.Log += LogClientMessage;
-            
-            string token = _patternSpiderConfig.Token;
-
-            await _client.LoginAsync(TokenType.Bot, token);
+            _client.Log += LogClientMessage;                        
+            await _client.LoginAsync(TokenType.Bot, _patternSpiderConfig.Token);
             await _client.StartAsync();
 
             _client.MessageReceived += MessageReceived;            
@@ -50,7 +53,7 @@ namespace PatternSpider_Discord
         {
             if (msg.Exception != null)
             {
-                Log.Error(msg.Exception,"Exception Caught by Discord.net");
+                Log.Fatal(msg.Exception,"Exception Caught by Discord.net");
 
                 return Task.CompletedTask;
             }
@@ -58,22 +61,22 @@ namespace PatternSpider_Discord
             switch (msg.Severity)
             {
                 case LogSeverity.Verbose:
-                    Log.Verbose($"{msg.Source} - {msg.Message}");
+                    Log.Verbose("Discord.net - {Source}: {Message}",msg.Source,msg.Message);
                     break;
                 case LogSeverity.Info:
-                    Log.Information($"{msg.Source} - {msg.Message}");
+                    Log.Information("Discord.net - {Source}: {Message}", msg.Source, msg.Message);
                     break;
                 case LogSeverity.Critical:
-                    Log.Warning($"{msg.Source} - {msg.Message}");
+                    Log.Warning("Discord.net - {Source}: {Message}", msg.Source, msg.Message);
                     break;
                 case LogSeverity.Debug:
-                    Log.Debug($"{msg.Source} - {msg.Message}");
+                    Log.Debug("Discord.net - {Source}: {Message}", msg.Source, msg.Message);
                     break;
                 case LogSeverity.Error:
-                    Log.Error($"{msg.Source} - {msg.Message}");
+                    Log.Error("Discord.net - {Source}: {Message}", msg.Source, msg.Message);
                     break;
                 case LogSeverity.Warning:
-                    Log.Warning($"{msg.Source} - {msg.Message}");
+                    Log.Warning("Discord.net - {Source}: {Message}", msg.Source, msg.Message);
                     break;                
             }
 
@@ -89,7 +92,7 @@ namespace PatternSpider_Discord
             }
             else
             {
-                Console.WriteLine("Could not load {0}, creating new config file.", PatternSpiderConfig.FullPath);
+                Log.Fatal("PatternSpider: Could not load {0}, creating a default one.", PatternSpiderConfig.FullPath);                
                 _patternSpiderConfig = new PatternSpiderConfig();
 
                 _patternSpiderConfig.Save();
