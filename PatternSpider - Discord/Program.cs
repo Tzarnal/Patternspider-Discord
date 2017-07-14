@@ -12,6 +12,7 @@ namespace PatternSpider_Discord
     {
         private PluginManager _pluginManager;
         private PatternSpiderConfig _patternSpiderConfig;
+        private DiscordSocketClient _client;
 
         public static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
@@ -21,16 +22,16 @@ namespace PatternSpider_Discord
             LoadConfiguration();
             _pluginManager = new PluginManager(_patternSpiderConfig.CommandSymbol);
 
-            var client = new DiscordSocketClient();
+            _client = new DiscordSocketClient();
 
-            client.Log += Log;
+            _client.Log += Log;
             
             string token = _patternSpiderConfig.Token;
 
-            await client.LoginAsync(TokenType.Bot, token);
-            await client.StartAsync();
+            await _client.LoginAsync(TokenType.Bot, token);
+            await _client.StartAsync();
 
-            client.MessageReceived += MessageReceived;            
+            _client.MessageReceived += MessageReceived;            
 
             await Task.Delay(-1);
         }
