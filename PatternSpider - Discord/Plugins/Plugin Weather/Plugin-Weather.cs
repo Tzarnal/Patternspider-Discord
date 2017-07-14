@@ -12,14 +12,12 @@ namespace PatternSpider_Discord.Plugins.Weather
 {
     class Weather : IPatternSpiderPlugin
     {
-        public string Name { get { return "Weather"; } }
-        public string Description { get { return "Gives weather information on command."; } }
+        public string Name => "Weather";        
+        public List<string> Commands => new List<string> { "weather" };
 
-        public List<string> Commands { get { return new List<string> { "weather" }; } }
-
-        private UsersLocations _usersLocations;
-        private ApiKeys _apiKeys;
-        private GeoCodeLookup _lookup;
+        private readonly UsersLocations _usersLocations;
+        private readonly ApiKeys _apiKeys;
+        private readonly GeoCodeLookup _lookup;
 
         public Weather()
         {
@@ -29,7 +27,7 @@ namespace PatternSpider_Discord.Plugins.Weather
             }
             else
             {
-                Log.Warning("Weather: Could not load {0}, creating an empty one.", UsersLocations.FullPath);
+                Log.Warning("Plugin-Weather: Could not load {0}, creating an empty one.", UsersLocations.FullPath);
                 _usersLocations = new UsersLocations();
                 _usersLocations.Save();
             }
@@ -40,7 +38,7 @@ namespace PatternSpider_Discord.Plugins.Weather
             }
             else
             {
-                Log.Warning("Weather: Could not load {0}, creating a default one.", ApiKeys.FullPath);
+                Log.Warning("Plugin-Weather: Could not load {0}, creating a default one.", ApiKeys.FullPath);
                 _apiKeys = new ApiKeys();
                 _apiKeys.Save();
             }
@@ -55,7 +53,7 @@ namespace PatternSpider_Discord.Plugins.Weather
             List<string> response = new List<string>();
             var user = m.Author.ToString();
 
-            if (messageParts.Count() == 1)
+            if (messageParts.Length == 1)
             {
                 if (_usersLocations.UserLocations.ContainsKey(user))
                 {
@@ -67,7 +65,7 @@ namespace PatternSpider_Discord.Plugins.Weather
                 }
 
             }
-            else if (messageParts.Count() == 2)
+            else if (messageParts.Length == 2)
             {
                 command = messageParts[1].ToLower();
                 if (command.ToLower() == "forecast")
@@ -131,7 +129,6 @@ namespace PatternSpider_Discord.Plugins.Weather
 
         private async Task<List<string>> WeatherToday(string location)
         {
-            List<string> output;
             Coordinates coordinates;
 
             try
@@ -157,7 +154,7 @@ namespace PatternSpider_Discord.Plugins.Weather
             catch (Exception e)
             {
                 Log.Debug(e, "Plugin-Weather: Weather Lookup failure");                
-                if (e.InnerException != null && !string.IsNullOrWhiteSpace(e.InnerException.Message))
+                if (!string.IsNullOrWhiteSpace(e.InnerException?.Message))
                     Log.Debug(e.InnerException, "Plugin-Weather: Weather Lookup failure details");                
 
                 return new List<string> { "Found " + coordinates.Name + " but could not find any weather there." };
@@ -165,8 +162,9 @@ namespace PatternSpider_Discord.Plugins.Weather
 
             var wToday = weather.currently;
 
-            output = new List<string> { string.Format("Weather for {0}: {1} and {2}, {3}% Humidity and {4} Winds.",
-                coordinates.Name, Temp(wToday.temperature), wToday.summary, wToday.humidity  * 100,  Windspeed(wToday.windSpeed) )};
+            var output = new List<string> {
+                $"Weather for {coordinates.Name}: {Temp(wToday.temperature)} and {wToday.summary}, {wToday.humidity * 100}% Humidity and {Windspeed(wToday.windSpeed)} Winds."
+            };
 
             return output;
         }
@@ -204,11 +202,8 @@ namespace PatternSpider_Discord.Plugins.Weather
 
             foreach (var dayWeather in dailyWeather)
             {
-                output.Add(string.Format("{0}: {1} {2} to {3}",
-                                         TimeFromEpoch(dayWeather.time).DayOfWeek,
-                                         dayWeather.summary,
-                                         Temp(dayWeather.temperatureMin),
-                                         Temp(dayWeather.temperatureMax)));
+                output.Add(
+                    $"{TimeFromEpoch(dayWeather.time).DayOfWeek}: {dayWeather.summary} {Temp(dayWeather.temperatureMin)} to {Temp(dayWeather.temperatureMax)}");
             }
 
             return output;
