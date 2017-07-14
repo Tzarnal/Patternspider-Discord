@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Serilog;
 using Discord;
 using Discord.WebSocket;
 using PatternSpider_Discord.Config;
@@ -22,9 +23,13 @@ namespace PatternSpider_Discord
             LoadConfiguration();
             _pluginManager = new PluginManager(_patternSpiderConfig.CommandSymbol);
 
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+
             _client = new DiscordSocketClient();
 
-            _client.Log += Log;
+            _client.Log += LogClientMessage;
             
             string token = _patternSpiderConfig.Token;
 
@@ -41,9 +46,37 @@ namespace PatternSpider_Discord
             await _pluginManager.DispatchMessage(m);
         }
 
-        private Task Log(LogMessage msg)
+        private Task LogClientMessage(LogMessage msg)
         {
-            Console.WriteLine(msg.ToString());
+            if (msg.Exception != null)
+            {
+                Log.Error(msg.Exception,"Exception Caught by Discord.net");
+
+                return Task.CompletedTask;
+            }
+
+            switch (msg.Severity)
+            {
+                case LogSeverity.Verbose:
+                    Log.Verbose($"{msg.Source} - {msg.Message}");
+                    break;
+                case LogSeverity.Info:
+                    Log.Information($"{msg.Source} - {msg.Message}");
+                    break;
+                case LogSeverity.Critical:
+                    Log.Warning($"{msg.Source} - {msg.Message}");
+                    break;
+                case LogSeverity.Debug:
+                    Log.Debug($"{msg.Source} - {msg.Message}");
+                    break;
+                case LogSeverity.Error:
+                    Log.Error($"{msg.Source} - {msg.Message}");
+                    break;
+                case LogSeverity.Warning:
+                    Log.Warning($"{msg.Source} - {msg.Message}");
+                    break;                
+            }
+
             return Task.CompletedTask;
         }
 
