@@ -10,7 +10,7 @@ using Serilog;
 
 namespace PatternSpider_Discord.Plugins.Weather
 {
-    class Weather : IPatternSpiderPlugin
+    class PluginWeather : IPatternSpiderPlugin
     {
         public string Name => "Weather";        
         public List<string> Commands => new List<string> { "weather" };
@@ -19,7 +19,7 @@ namespace PatternSpider_Discord.Plugins.Weather
         private readonly ApiKeys _apiKeys;
         private readonly GeoCodeLookup _lookup;
 
-        public Weather()
+        public PluginWeather()
         {
             if (File.Exists(UsersLocations.FullPath))
             {
