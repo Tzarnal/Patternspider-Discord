@@ -23,7 +23,7 @@ namespace PatternSpider_Discord.Plugins
 
             if (result == "NaN")
             {
-                await m.Channel.SendMessageAsync($"Could not process math expression.");
+                await m.Channel.SendMessageAsync("Could not process math expression.");
             }
             else
             {
