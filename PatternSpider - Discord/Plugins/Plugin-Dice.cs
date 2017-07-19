@@ -18,9 +18,9 @@ namespace PatternSpider_Discord.Plugins
         private string _diceResults;
         private readonly DiceRoller _genie = new DiceRoller();
 
-        public async Task Command(string command, string messsage, SocketMessage m)
+        public async Task Command(string command, string message, SocketMessage m)
         {
-            var messageParts = messsage.Split(' ');
+            var messageParts = message.Split(' ');
             var processedMessage = string.Join(" ", messageParts.Skip(1));
             var name = m.Author.Username;
             var response = new StringBuilder();
@@ -93,7 +93,7 @@ namespace PatternSpider_Discord.Plugins
 
             if (response.Length > 0)
             {
-                await m.Channel.SendMessageAsync($"{m.Author.Mention} -- Result for: {messsage}\n" +
+                await m.Channel.SendMessageAsync($"{m.Author.Mention} -- Result for: {message}\n" +
                                                  $"{response}");                
             }
             else
@@ -102,7 +102,7 @@ namespace PatternSpider_Discord.Plugins
             }
         }
 
-        public Task Message(string messsage, SocketMessage m)
+        public Task Message(string message, SocketMessage m)
         {
             return Task.CompletedTask;
         }

@@ -32,7 +32,7 @@ namespace PatternSpider_Discord.Plugins.Mumble
             }
         }
 
-        public async Task Command(string command, string messsage, SocketMessage m)
+        public async Task Command(string command, string message, SocketMessage m)
         {            
             var guildChannel = m.Channel as IGuildChannel;
             if (guildChannel == null)
@@ -45,12 +45,12 @@ namespace PatternSpider_Discord.Plugins.Mumble
 
             if (candidateServer != null)
             {
-                var message = await GetMumbleData(candidateServer.MumbleCVP);
-                await m.Channel.SendMessageAsync(message);
+                var response = await GetMumbleData(candidateServer.MumbleCVP);
+                await m.Channel.SendMessageAsync(response);
             }
         }
 
-        public Task Message(string messsage, SocketMessage m)
+        public Task Message(string message, SocketMessage m)
         {
             return Task.CompletedTask;
         }

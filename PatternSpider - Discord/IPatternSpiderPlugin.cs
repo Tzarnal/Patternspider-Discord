@@ -9,7 +9,7 @@ namespace PatternSpider_Discord
         string Name { get; }
         List<string> Commands { get; }
 
-        Task Command(string command, string messsage, SocketMessage m);
-        Task Message(string messsage, SocketMessage m);
+        Task Command(string command, string message, SocketMessage m);
+        Task Message(string message, SocketMessage m);
     }
 }

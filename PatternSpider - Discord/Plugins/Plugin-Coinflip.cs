@@ -16,7 +16,7 @@ namespace PatternSpider_Discord.Plugins
         _genie = new DiceRoller();
     }
 
-    public async Task Command(string command, string messsage, SocketMessage m)
+    public async Task Command(string command, string message, SocketMessage m)
     {
         var roll = _genie.RollDice(2);
 
@@ -30,7 +30,7 @@ namespace PatternSpider_Discord.Plugins
         }
     }
 
-    public Task Message(string messsage, SocketMessage m)
+    public Task Message(string message, SocketMessage m)
     {
         return Task.CompletedTask;
     }

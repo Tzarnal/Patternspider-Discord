@@ -46,9 +46,9 @@ namespace PatternSpider_Discord.Plugins.Weather
             _lookup = new GeoCodeLookup(_apiKeys.MapQuestKey);            
         }
 
-        public async Task Command(string command, string messsage, SocketMessage m)
+        public async Task Command(string command, string message, SocketMessage m)
         {
-            var text = messsage.Trim();
+            var text = message.Trim();
             var messageParts = text.Split(' ');
             List<string> response = new List<string>();
             var user = m.Author.ToString();
@@ -122,7 +122,7 @@ namespace PatternSpider_Discord.Plugins.Weather
             await m.Channel.SendMessageAsync(finalResponse);
         }
 
-        public Task Message(string messsage, SocketMessage m)
+        public Task Message(string message, SocketMessage m)
         {
             return Task.CompletedTask;
         }

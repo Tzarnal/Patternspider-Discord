@@ -9,12 +9,12 @@ namespace PatternSpider_Discord.Plugins
         public string Name => "Ping";
         public List<string> Commands=> new List<string>{"ping"};
 
-        public async Task Command(string command, string messsage, SocketMessage m)
+        public async Task Command(string command, string message, SocketMessage m)
         {
             await m.Channel.SendMessageAsync("Pong.");
         }
 
-        public Task Message(string messsage, SocketMessage m)
+        public Task Message(string message, SocketMessage m)
         {
             return Task.CompletedTask;
         }

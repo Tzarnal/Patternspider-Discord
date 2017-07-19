@@ -14,10 +14,10 @@ namespace PatternSpider_Discord.Plugins
         public List<string> Commands => new List<string> { "math", "m", "calculate", "calc", "c" };
 
 
-        public async Task Command(string command, string messsage, SocketMessage m)
+        public async Task Command(string command, string message, SocketMessage m)
         {
-            var messageParts = messsage.Split(' ');
-            var message = string.Join(" ", messageParts.Skip(1));
+            var messageParts = message.Split(' ');
+            message = string.Join(" ", messageParts.Skip(1));
 
             var result = CalculateString(message);
 
@@ -32,7 +32,7 @@ namespace PatternSpider_Discord.Plugins
            
         }
 
-        public Task Message(string messsage, SocketMessage m)
+        public Task Message(string message, SocketMessage m)
         {
             return Task.CompletedTask;
         }

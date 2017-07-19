@@ -9,14 +9,14 @@ namespace PatternSpider_Discord.Plugins
         public string Name => "Chat Reactions";
         public List<string> Commands => new List<string>();
 
-        public Task Command(string command, string messsage, SocketMessage m)
+        public Task Command(string command, string message, SocketMessage m)
         {
             return Task.CompletedTask;
         }
 
-        public async Task Message(string messsage, SocketMessage m)
+        public async Task Message(string message, SocketMessage m)
         {
-            if (messsage.Contains("(╯°□°)╯︵ ┻━┻"))
+            if (message.Contains("(╯°□°)╯︵ ┻━┻"))
                 await m.Channel.SendMessageAsync("┬──┬◡ﾉ(° -°ﾉ)" );            
         }
     }

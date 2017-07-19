@@ -26,7 +26,7 @@ namespace PatternSpider_Discord.Plugins
                     await RollDamage(message, m);
                     break;
 
-                case "e":
+                //case "e":
                 default:
                     await Roll(message, m);
                     break;
@@ -47,8 +47,7 @@ namespace PatternSpider_Discord.Plugins
 
             foreach (var messagePart in messageParts)
             {
-                int poolSize;
-                if (int.TryParse(messagePart, out poolSize))
+                if (int.TryParse(messagePart, out int poolSize))
                 {
                     response.AppendLine(poolSize > 2000
                         ? "No Pools over 2000."
@@ -64,15 +63,14 @@ namespace PatternSpider_Discord.Plugins
         {
             var response = new StringBuilder();
             var messageParts = message.Split(' ');
-            int targetNumber;
 
             if (messageParts.Length < 3)
             {
                 await m.Channel.SendMessageAsync("Usage: e <target number> <poolsize> [poolsize]...");
-                return;                
+                return;
             }
 
-            if (!int.TryParse(messageParts[1], out targetNumber))
+            if (!int.TryParse(messageParts[1], out int targetNumber))
             {
                 await m.Channel.SendMessageAsync("Usage: e <target number> <poolsize> [poolsize]...");
                 return;
@@ -80,12 +78,11 @@ namespace PatternSpider_Discord.Plugins
 
             foreach (var messagePart in messageParts.Skip(2))
             {
-                int poolSize;
-                if (int.TryParse(messagePart, out poolSize))
+                if (int.TryParse(messagePart, out int poolSize))
                 {
                     response.AppendLine(poolSize > 2000
                         ? "No Pools over 2000."
-                        : string.Format("{0}", RollPool(poolSize,targetNumber)));
+                        : string.Format("{0}", RollPool(poolSize, targetNumber)));
                 }
             }
 
@@ -106,8 +103,7 @@ namespace PatternSpider_Discord.Plugins
 
             foreach (var messagePart in messageParts)
             {
-                int poolSize;
-                if (int.TryParse(messagePart, out poolSize))
+                if (int.TryParse(messagePart, out int poolSize))
                 {
                     response.AppendLine(poolSize > 2000
                         ? "No Pools over 2000."
@@ -119,7 +115,7 @@ namespace PatternSpider_Discord.Plugins
                                              $"{response}");
         }
 
-        public Task Message(string messsage, SocketMessage m)
+        public Task Message(string message, SocketMessage m)
         {
             return Task.CompletedTask;
         }
