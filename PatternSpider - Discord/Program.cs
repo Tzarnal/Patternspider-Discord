@@ -4,7 +4,6 @@ using Serilog;
 using Discord;
 using Discord.WebSocket;
 using PatternSpider_Discord.Config;
-using PatternSpider_Discord.Plugins;
 
 namespace PatternSpider_Discord
 {
@@ -45,7 +44,8 @@ namespace PatternSpider_Discord
 
         private async Task MessageReceived(SocketMessage m)
         {
-            await _pluginManager.DispatchMessage(m);
+            if(m.Author != _client.CurrentUser)
+                await _pluginManager.DispatchMessage(m);
         }
 
         private Task LogClientMessage(LogMessage msg)
