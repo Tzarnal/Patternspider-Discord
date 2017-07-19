@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Discord.WebSocket;
 
-namespace PatternSpider_Discord.Plugins
+namespace PatternSpider_Discord
 {
     public interface IPatternSpiderPlugin
     {

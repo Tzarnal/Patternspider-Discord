@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Discord.WebSocket;
 using Serilog;
 
-namespace PatternSpider_Discord.Plugins
+namespace PatternSpider_Discord
 {
     public class PluginManager
     {
