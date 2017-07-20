@@ -42,7 +42,10 @@ namespace PatternSpider_Discord.Plugins.Sentience
 
             if (!File.Exists(BrainPath))
             {
-                File.Create(BrainPath);
+                //This is a little ugly but i can't manually close a filestream
+                using (var f = File.Create(BrainPath))
+                {                    
+                }
             }
 
             PruneBrain();
