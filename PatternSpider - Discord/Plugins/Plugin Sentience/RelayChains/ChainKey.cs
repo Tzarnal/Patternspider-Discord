@@ -34,7 +34,7 @@ namespace PatternSpider_Discord.Plugins.Sentience.RelayChains
             _entries = content.ToArray();
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return String.Join("·", _entries);
         }
