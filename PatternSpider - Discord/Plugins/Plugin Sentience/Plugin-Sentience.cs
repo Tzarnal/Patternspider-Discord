@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using PatternSpider_Discord.Plugins.Sentience.RelayChains;
+using Serilog;
 
 namespace PatternSpider_Discord.Plugins.Sentience
 {
@@ -124,14 +125,17 @@ namespace PatternSpider_Discord.Plugins.Sentience
             {
                 var brain = new Chain(_settings.WindowSize);
                 string line;
-                
+
+                var i = 0;
+
                 while ((line = reader.ReadLine()) != null)
-                {
-                    brain.Learn("sup");
+                {                    
                     brain.Learn(TextSanitizer.SanitizeInput(line));
+                    i++;
                 }
 
                 _brain = brain;
+                Log.Information("Patternspider - Sentience: Loaded Brain, Parsed {i} Lines",i);
             }
         }
 
