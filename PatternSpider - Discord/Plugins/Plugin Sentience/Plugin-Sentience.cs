@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
@@ -65,23 +64,26 @@ namespace PatternSpider_Discord.Plugins.Sentience
         }
 
         public async Task Message(string message, SocketMessage m)
-        {
-            var botName = "PatternSpider";
-            var botNameMatch = string.Format("^(@)?{0}[:,;]", botName);
-
+        {                        
             if (_brain == null)
             {
                 return;
             }
-
             var brain = _brain;
-          
-            if (Regex.IsMatch(message, botNameMatch))
+
+            bool mentioned = false;
+
+            foreach (var user in m.MentionedUsers)
             {
-                var regex = new Regex(botNameMatch);
+                if (user.Id == DiscordClient.CurrentUser.Id)
+                {
+                    mentioned = true;
+                }
+            }
 
-                message = regex.Replace(message, "");
-
+            if (mentioned)
+            {
+                TextSanitizer.FixMiscelanious(message = Regex.Replace(message, "<.+>",""));                
                 var response = TextSanitizer.FixInputEnds(brain.GenerateSentenceFromSentence(message));
 
                 if (!string.IsNullOrWhiteSpace(response))
