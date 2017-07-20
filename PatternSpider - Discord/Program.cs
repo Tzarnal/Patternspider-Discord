@@ -42,10 +42,14 @@ namespace PatternSpider_Discord
             await Task.Delay(-1);
         }
 
-        private async Task MessageReceived(SocketMessage m)
+        private Task MessageReceived(SocketMessage m)
         {
-            if(m.Author.Id != _client.CurrentUser.Id)
-                await _pluginManager.DispatchMessage(m);
+            if (m.Author.Id != _client.CurrentUser.Id)
+            {
+                Task.Run(() => _pluginManager.DispatchMessage(m));                
+            }
+                
+            return Task.CompletedTask;
         }
 
         private Task LogClientMessage(LogMessage msg)
