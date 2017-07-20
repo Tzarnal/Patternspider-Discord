@@ -116,7 +116,7 @@ namespace PatternSpider_Discord.Plugins.Sentience
                 {
                     fs.WriteLine(message);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Log.Warning("Patternspider - Sentience: Failed to write line to Brain File.");
                 }
