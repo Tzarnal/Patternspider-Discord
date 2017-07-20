@@ -44,7 +44,7 @@ namespace PatternSpider_Discord
 
         private async Task MessageReceived(SocketMessage m)
         {
-            if(m.Author != _client.CurrentUser)
+            if(m.Author.Id != _client.CurrentUser.Id)
                 await _pluginManager.DispatchMessage(m);
         }
 
