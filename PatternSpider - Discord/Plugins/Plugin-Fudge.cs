@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 
@@ -11,7 +9,7 @@ namespace PatternSpider_Discord.Plugins
         public string Name => "Fudge Dice";
         public List<string> Commands => new List<string> { "fudge" };
 
-        private readonly DiceRoller _genie = new DiceRoller();
+        private readonly DiceRoller _genie;
 
         public PluginFudge()
         {
@@ -19,8 +17,7 @@ namespace PatternSpider_Discord.Plugins
         }
 
         public async Task Command(string command, string message, SocketMessage m)
-        {            
-            var name = m.Author.Username;
+        {
             var messageParts = message.Split(' ');
             var diceNumber = 4;
 
@@ -40,20 +37,20 @@ namespace PatternSpider_Discord.Plugins
                 if (roll == 1)
                 {
                     rollTotal--;
-                    results[i - 1] = "➖";
+                    results[i - 1] = "<:FateMinus:337287430455558144>";
                 }
                 else if (roll == 2)
                 {
-                    results[i - 1] = "🔲";
+                    results[i - 1] = "<:FateNull:337287451699576832>";
                 }
                 else
                 {
                     rollTotal++;
-                    results[i - 1] = "➕";
+                    results[i - 1] = "<:FatePlus:337287399509852181>";
                 }
             }
 
-            await m.Channel.SendMessageAsync(m.Author.Mention + " -- [" + string.Join(" ", results) + "] -- Sum: " + rollTotal);
+            await m.Channel.SendMessageAsync(m.Author.Mention + " -- [ " + string.Join(" ", results) + " ] -- Sum: " + rollTotal);
         }
 
         public Task Message(string message, SocketMessage m)
