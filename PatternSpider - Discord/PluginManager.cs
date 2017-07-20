@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using PatternSpider_Discord.Config;
 using Serilog;
 
 namespace PatternSpider_Discord
@@ -11,10 +12,14 @@ namespace PatternSpider_Discord
         private readonly List<IPatternSpiderPlugin> _plugins;
         private readonly char _commandSymbol;
 
-        public PluginManager(char commandSymbol)
+        public PatternSpiderConfig ClientConfig { get; set; }
+        public DiscordSocketClient DiscordClient { get; set; }
+
+        public PluginManager(PatternSpiderConfig config, DiscordSocketClient client)
         {
             _plugins = new List<IPatternSpiderPlugin>();
-            _commandSymbol = commandSymbol;
+
+            _commandSymbol = config.CommandSymbol;
 
             //Load Plugins through reflection.
             System.Reflection.Assembly ass = System.Reflection.Assembly.GetEntryAssembly();
@@ -23,9 +28,12 @@ namespace PatternSpider_Discord
             {
                 if (ti.ImplementedInterfaces.Contains(typeof(IPatternSpiderPlugin)))
                 {
-                    _plugins.Add((IPatternSpiderPlugin) ass.CreateInstance(ti.FullName));                    
+                    var plugin = (IPatternSpiderPlugin) ass.CreateInstance(ti.FullName);
+                    plugin.ClientConfig = config;
+                    plugin.DiscordClient = client;
+                    _plugins.Add(plugin);
                 }
-            }
+            }         
 
             var pluginNames = _plugins.Select(plugin => plugin.Name).ToList();
 

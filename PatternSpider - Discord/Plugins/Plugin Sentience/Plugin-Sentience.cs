@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using PatternSpider_Discord.Config;
 using PatternSpider_Discord.Plugins.Sentience.RelayChains;
 using Serilog;
 
@@ -13,6 +15,9 @@ namespace PatternSpider_Discord.Plugins.Sentience
     {
         public string Name => "Sentience";
         public List<string> Commands => new List<string>();
+
+        public PatternSpiderConfig ClientConfig { get; set; }
+        public DiscordSocketClient DiscordClient { get; set; }
 
         private Chain _brain;
         private readonly object _writeLock;

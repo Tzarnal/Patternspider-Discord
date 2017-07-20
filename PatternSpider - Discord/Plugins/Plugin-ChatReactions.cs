@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using PatternSpider_Discord.Config;
 
 namespace PatternSpider_Discord.Plugins
 {
@@ -8,6 +9,9 @@ namespace PatternSpider_Discord.Plugins
     {
         public string Name => "Chat Reactions";
         public List<string> Commands => new List<string>();
+
+        public PatternSpiderConfig ClientConfig { get; set; }
+        public DiscordSocketClient DiscordClient { get; set; }
 
         public Task Command(string command, string message, SocketMessage m)
         {

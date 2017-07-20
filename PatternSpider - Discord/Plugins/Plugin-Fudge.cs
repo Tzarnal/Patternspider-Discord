@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using PatternSpider_Discord.Config;
 
 namespace PatternSpider_Discord.Plugins
 {
@@ -8,6 +9,9 @@ namespace PatternSpider_Discord.Plugins
     {
         public string Name => "Fudge Dice";
         public List<string> Commands => new List<string> { "fudge" };
+
+        public PatternSpiderConfig ClientConfig { get; set; }
+        public DiscordSocketClient DiscordClient { get; set; }
 
         private readonly DiceRoller _genie;
 
@@ -56,6 +60,6 @@ namespace PatternSpider_Discord.Plugins
         public Task Message(string message, SocketMessage m)
         {
             return Task.CompletedTask;
-        }
+        }        
     }
 }

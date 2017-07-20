@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using org.mariuszgromada.math.mxparser;
+using PatternSpider_Discord.Config;
 
 namespace PatternSpider_Discord.Plugins
 {
@@ -14,6 +15,9 @@ namespace PatternSpider_Discord.Plugins
     {
         public string Name => "Dice";
         public List<string> Commands => new List<string> { "dice", "d", "roll", "r", "d100", "d20", "d12", "d10", "d8", "d6", "d4" };
+
+        public PatternSpiderConfig ClientConfig { get; set; }
+        public DiscordSocketClient DiscordClient { get; set; }
 
         private string _diceResults;
         private readonly DiceRoller _genie = new DiceRoller();

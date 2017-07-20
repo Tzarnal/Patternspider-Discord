@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Newtonsoft.Json;
+using PatternSpider_Discord.Config;
 using Serilog;
 
 namespace PatternSpider_Discord.Plugins.Hearthstone
@@ -14,6 +15,9 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
     {
         public string Name => "Hearthstone";
         public List<string> Commands => new List<string> { "hs" };
+
+        public PatternSpiderConfig ClientConfig { get; set; }
+        public DiscordSocketClient DiscordClient { get; set; }
 
         public async Task Command(string command, string message, SocketMessage m)
         {

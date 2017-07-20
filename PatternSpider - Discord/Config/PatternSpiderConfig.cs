@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace PatternSpider_Discord.Config
 {
-    class PatternSpiderConfig
+    public class PatternSpiderConfig
     {
         public static string ConfigPath = "Configuration/";
         public static string ConfigFileName = "Pattern Spider Configuration.json";

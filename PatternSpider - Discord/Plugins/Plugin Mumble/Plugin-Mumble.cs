@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using PatternSpider_Discord.Config;
 using Serilog;
 
 namespace PatternSpider_Discord.Plugins.Mumble
@@ -15,6 +16,9 @@ namespace PatternSpider_Discord.Plugins.Mumble
     {
         public string Name => "Mumble";
         public List<string> Commands => new List<string> { "mumble" };
+
+        public PatternSpiderConfig ClientConfig { get; set; }
+        public DiscordSocketClient DiscordClient { get; set; }
 
         private readonly MumbleServers _servers;
 

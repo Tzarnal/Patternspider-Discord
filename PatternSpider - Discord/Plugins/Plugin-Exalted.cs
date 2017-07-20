@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using PatternSpider_Discord.Config;
 
 namespace PatternSpider_Discord.Plugins
 {
@@ -11,6 +12,9 @@ namespace PatternSpider_Discord.Plugins
     {
         public string Name => "Exalted";
         public List<string> Commands => new List<string> {"e", "ed", "et"};
+
+        public PatternSpiderConfig ClientConfig { get; set; }
+        public DiscordSocketClient DiscordClient { get; set; }
 
         private readonly DiceRoller _fate = new DiceRoller();
 

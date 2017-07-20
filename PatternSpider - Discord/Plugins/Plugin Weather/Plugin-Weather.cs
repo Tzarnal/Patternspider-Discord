@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using PatternSpider_Discord.Config;
 using Serilog;
 
 namespace PatternSpider_Discord.Plugins.Weather
@@ -14,6 +15,9 @@ namespace PatternSpider_Discord.Plugins.Weather
     {
         public string Name => "Weather";        
         public List<string> Commands => new List<string> { "weather" };
+
+        public PatternSpiderConfig ClientConfig { get; set; }
+        public DiscordSocketClient DiscordClient { get; set; }
 
         private readonly UsersLocations _usersLocations;
         private readonly ApiKeys _apiKeys;

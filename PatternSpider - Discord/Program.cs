@@ -29,13 +29,13 @@ namespace PatternSpider_Discord
 
             LoadConfiguration();
 
-            _pluginManager = new PluginManager(_patternSpiderConfig.CommandSymbol);
-
             _client = new DiscordSocketClient();
-
+                       
             _client.Log += LogClientMessage;                        
             await _client.LoginAsync(TokenType.Bot, _patternSpiderConfig.Token);
             await _client.StartAsync();
+
+            _pluginManager = new PluginManager(_patternSpiderConfig, _client);
 
             _client.MessageReceived += MessageReceived;            
 

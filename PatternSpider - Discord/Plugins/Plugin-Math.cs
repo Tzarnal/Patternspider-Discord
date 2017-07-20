@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using org.mariuszgromada.math.mxparser;
 using Discord.WebSocket;
+using PatternSpider_Discord.Config;
 
 namespace PatternSpider_Discord.Plugins
 {
@@ -13,6 +14,8 @@ namespace PatternSpider_Discord.Plugins
         public string Name => "Math";
         public List<string> Commands => new List<string> { "math", "m", "calculate", "calc", "c" };
 
+        public PatternSpiderConfig ClientConfig { get; set; }
+        public DiscordSocketClient DiscordClient { get; set; }
 
         public async Task Command(string command, string message, SocketMessage m)
         {
