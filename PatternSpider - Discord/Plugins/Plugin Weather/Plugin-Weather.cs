@@ -225,8 +225,9 @@ namespace PatternSpider_Discord.Plugins.Weather
 
             foreach (var dayWeather in dailyWeather)
             {
+                var weatherIcon = _weatherIcons[dayWeather.icon];
                 output.Add(
-                    $"{TimeFromEpoch(dayWeather.time).DayOfWeek}: {dayWeather.summary} {Temp(dayWeather.temperatureMin)} to {Temp(dayWeather.temperatureMax)}");
+                    $"{TimeFromEpoch(dayWeather.time).DayOfWeek}: {weatherIcon} {dayWeather.summary} {Temp(dayWeather.temperatureMin)} to {Temp(dayWeather.temperatureMax)}");
             }
 
             return output;
