@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Serilog;
 
 namespace PatternSpider_Discord.Plugins.Weather
 {
@@ -55,6 +57,31 @@ namespace PatternSpider_Discord.Plugins.Weather
         public double ozone { get; set; }
         public int? precipIntensityMaxTime { get; set; }
         public string precipType { get; set; }
+
+        private static Dictionary<double, string> MoonPhases = new Dictionary<double, string>
+        {
+            {0,"🌑"},
+            {0.125,"🌒"},
+            {0.25,"🌓"},
+            {0.375,"🌔"},
+            {0.5,"🌕"},
+            {0.625,"🌖"},
+            {0.75,"🌗"},
+            {0.875,"🌘"}
+        };
+
+        public string MoonPhase()
+        {           
+            foreach (var p in MoonPhases)
+            {
+                if (moonPhase < p.Key)
+                {
+                    return p.Value;
+                }
+            }
+            
+            return MoonPhases.Last().Value;
+        }
     }
 
     public class Daily

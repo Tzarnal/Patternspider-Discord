@@ -23,6 +23,23 @@ namespace PatternSpider_Discord.Plugins.Weather
         private readonly ApiKeys _apiKeys;
         private readonly GeoCodeLookup _lookup;
 
+        private static Dictionary<string, string> _weatherIcons = new Dictionary<string, string>
+        {
+            { "clear-day", "☀️" } ,
+            { "clear-night", "🌃" } ,
+            { "rain", "🌧️" } ,
+            { "snow", "❄️" } ,
+            { "sleet", "🌨️" } ,
+            { "wind", "💨" } ,
+            { "fog", "🌁" } ,
+            { "cloudy", "☁️" } ,
+            { "partly-cloudy-day", "⛅" } ,
+            { "partly-cloudy-night", "⛅" } ,
+            { "hail", "🌨️" } ,
+            { "thunderstorm", "⛈️" } ,
+            { "tornado", "🌪️" }
+        };
+
         public PluginWeather()
         {
             if (File.Exists(UsersLocations.FullPath))
@@ -165,9 +182,11 @@ namespace PatternSpider_Discord.Plugins.Weather
             }
 
             var wToday = weather.currently;
-
+            var moonPhase = weather.daily.data[0].MoonPhase();
+            var weatherIcon = _weatherIcons[wToday.icon];
+            
             var output = new List<string> {
-                $"Weather for {coordinates.Name}: {Temp(wToday.temperature)} and {wToday.summary}, {wToday.humidity * 100}% Humidity and {Windspeed(wToday.windSpeed)} Winds."
+                $"Weather for {coordinates.Name}: {weatherIcon} {Temp(wToday.temperature)} and {wToday.summary}, {wToday.humidity * 100}% Humidity and {Windspeed(wToday.windSpeed)} Winds. Moon:{moonPhase}"
             };
 
             return output;
@@ -269,7 +288,6 @@ namespace PatternSpider_Discord.Plugins.Weather
             helpText.AppendLine("Weather Remember <location> - Remembers a location for your nickname");
 
             return helpText.ToString();
-        }
-
+        }                        
     }
 }
