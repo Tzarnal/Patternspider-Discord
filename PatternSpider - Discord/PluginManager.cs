@@ -52,7 +52,7 @@ namespace PatternSpider_Discord
                 return;
             }
 
-            var commandWord = m.Content.Split(' ').First().TrimStart(_commandSymbol);
+            var commandWord = m.Content.Split(' ').First().TrimStart(_commandSymbol).ToLower();
 
             foreach (IPatternSpiderPlugin plugin in _plugins)
             {
