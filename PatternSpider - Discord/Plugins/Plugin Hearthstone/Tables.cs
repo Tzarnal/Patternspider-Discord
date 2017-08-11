@@ -19,7 +19,9 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
             {"LOE", "Year2" },
             {"OG", "Kraken" },
             {"MSG", "Kraken" },
-            {"UNGORO","Mammoth" }
+            {"KARA", "Kraken" },
+            {"UNGORO","Mammoth" },
+            {"ICECROWN","Mammoth" }
         };
 
 
@@ -38,3 +40,4 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
         };
     }
 }
+
