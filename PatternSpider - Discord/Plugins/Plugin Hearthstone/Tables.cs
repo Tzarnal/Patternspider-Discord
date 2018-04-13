@@ -21,22 +21,26 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
             {"MSG", "Kraken" },
             {"KARA", "Kraken" },
             {"UNGORO","Mammoth" },
-            {"ICECROWN","Mammoth" }
+            {"ICECROWN","Mammoth" },
+            {"KOBOLDS","Mammoth" },
+            {"WITCHWOOD","Raven" }
         };
 
 
         public static Dictionary<string, string> BlockNameCorrection = new Dictionary<string, string>()
         {
             {"GANGS", "MSG"},
-            {"GADGET", "MSG"}
+            {"GADGET", "MSG"},
+            {"LOOTAPALOOZA","KOBOLDS" },
+            {"GILNEAS","WITCHWOOD" }
         };
 
         public static List<string> StandardLegal = new List<string>
         {
             "Basic",
-            "Classic",
-            "Kraken",
-            "Mammoth"
+            "Classic",            
+            "Mammoth",
+            "Raven"
         };
     }
 }
