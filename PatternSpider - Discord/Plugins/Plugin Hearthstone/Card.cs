@@ -2,6 +2,12 @@
 
 namespace PatternSpider_Discord.Plugins.Hearthstone
 {
+    public class Medium
+    {
+        public string type { get; set; }
+        public string url { get; set; }
+    }
+
     public class Card
     {
         public string _id { get; set; }
@@ -26,5 +32,24 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
         public int? durability { get; set; }
         public string how_to_earn { get; set; }
         public string how_to_earn_golden { get; set; }
+
+        public List<Medium> media { get; set; }
+
+        public string cardImageUrl
+        {
+            get {
+                foreach (var medium in media)
+                {
+                    if (medium.type == "CARD_IMAGE")
+                    {
+                        return medium.url;
+                    }
+                }
+
+                return "none";
+            }
+        }
+
+        public string cardImage => $"http://media.services.zam.com/v1/media/byName{cardImageUrl}";
     }
 }

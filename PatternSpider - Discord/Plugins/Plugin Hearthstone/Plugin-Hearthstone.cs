@@ -114,16 +114,16 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
             switch (card.type)
             {
                 case "MINION":
-                    cardText = string.Format("[{7}] [{8}] http://www.hearthhead.com/cards/{5}\n",
-                                            card.name, card.attack, card.health, card.cost, card.text, zamName, cardClass, cardSet, format);
+                    cardText = string.Format("[{7}] [{8}] http://www.hearthhead.com/cards/{5}\n {9}",
+                                            card.name, card.attack, card.health, card.cost, card.text, zamName, cardClass, cardSet, format, card.cardImage);
                     break;
                 case "SPELL":
-                    cardText = string.Format("[{5}] [{6}] http://www.hearthhead.com/cards/{3}\n",
-                                            card.name, card.cost, card.text, zamName, cardClass, cardSet, format);
+                    cardText = string.Format("[{5}] [{6}] http://www.hearthhead.com/cards/{3}\n {7}",
+                                            card.name, card.cost, card.text, zamName, cardClass, cardSet, format, card.cardImage);
                     break;
                 case "WEAPON":
-                    cardText = string.Format("[{6}] [{7}] http://www.hearthhead.com/cards/{4}\n",
-                                             card.name, card.attack, card.durability, card.cost, zamName, cardClass, cardSet, format);
+                    cardText = string.Format("[{6}] [{7}] http://www.hearthhead.com/cards/{4}\n {8}",
+                                             card.name, card.attack, card.durability, card.cost, zamName, cardClass, cardSet, format, card.cardImage);
 
                     if (!string.IsNullOrWhiteSpace(card.text))
                     {
@@ -132,8 +132,8 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
                     break;
                 default:
                     cardText = string.Format("" +
-                                             "[{4}] [{5}] http://www.hearthhead.com/cards/{3}\n",
-                                             card.name, card.cost, card.text, zamName, card.set, block);
+                                             "[{4}] [{5}] http://www.hearthhead.com/cards/{3}\n {6}",
+                                             card.name, card.cost, card.text, zamName, card.set, block, card.cardImage);
                     break;
             }
 
