@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Discord.WebSocket;
@@ -28,7 +29,7 @@ namespace PatternSpider_Discord.Plugins.MTG
             var searchString = string.Join(" ", messageParts.Skip(1));
 
             var searchResult = await SearchMagic(searchString);
-            
+
             await m.Channel.SendMessageAsync(searchResult);
         }
 
@@ -41,7 +42,8 @@ namespace PatternSpider_Discord.Plugins.MTG
         public async Task<string> SearchMagic(string searchString)
         {
             List<MtgCard> cards;
-            string searchUrl = $"https://api.magicthegathering.io/v1/cards?name={searchString}";
+            var searchTerm = WebUtility.UrlEncode(searchString.ToLower());
+            var searchUrl = $"https://api.magicthegathering.io/v1/cards?name={searchTerm}";
             string jsonData;
 
             var client = new HttpClient();
@@ -72,7 +74,7 @@ namespace PatternSpider_Discord.Plugins.MTG
                 throw;
             }
 
-            if(cards.Count == 1)
+            if (cards.Count == 1)
                 return CardToString(cards.FirstOrDefault());
 
             if (cards.Count == 0)
@@ -80,9 +82,18 @@ namespace PatternSpider_Discord.Plugins.MTG
                 return $"Could not find any cards named: {searchString}";
             }
 
+            var nameBuffer = cards.FirstOrDefault().name;
+            foreach (var card in cards)
+            {
+                if( card.name != nameBuffer)
+                {
+                    return $"[<https://scryfall.com/search?q={searchTerm}&unique=cards&as=grid&order=name>] Found {cards.Count} results.";
+                }
+                
+            }
 
-            return $"[<http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[{searchString}]>] Found {cards.Count} results.";
-
+            Log.Information("end, last or default");
+            return CardToString(cards.LastOrDefault());
         }
 
         private static List<MtgCard> ParseJson(string data)
@@ -97,7 +108,8 @@ namespace PatternSpider_Discord.Plugins.MTG
 
             var cardImage = card.imageUrl;
             var cardName = card.name;
-            var cardUrl = $"http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={card.multiverseid}";
+            var searchTerm = WebUtility.UrlEncode(card.name.ToLower());
+            var cardUrl = $"https://scryfall.com/search?q={searchTerm}&unique=cards&as=grid&order=name";
 
             cardString.Append($"[<{cardUrl}>] {cardName}\n");
 
