@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
@@ -38,7 +39,7 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
         private async Task<string> SearchHearthHead(string searchString)
         {
             List<Card> cards;
-            string searchUrl = $"http://hearthstone.services.zam.com/v1/card?sort=cost,name&search={searchString}&cost=0,1,2,3,4,5,6,7&type=MINION,SPELL,WEAPON&collectible=true";
+            string searchUrl = $"http://hearthstone.services.zam.com/v1/card?sort=cost,name&search={searchString}&cost=0,1,2,3,4,5,6,7,8,9,10&type=MINION,SPELL,WEAPON,HERO&collectible=true";
             string jsonData;
 
             var client = new HttpClient();
@@ -70,13 +71,18 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
                 throw;
             }
 
+            if (cards.Count == 0)
+            {
+                return $"could not find any cards named: {searchString}";
+            }
+
             if (cards.Count == 1)
             {
                 var card = cards[0];
                 return CardToString(card);
             }
 
-            return $"[http://www.hearthhead.com/cards] Found {cards.Count} results.";
+            return $"[<https://www.hearthpwn.com/cards?filter-name={searchString}&filter-premium=1&display=3>] Found {cards.Count} results.";
         }
 
         private static List<Card> ParseJson(string data)
@@ -87,57 +93,37 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
         private string CardToString(Card card)
         {
             string cardText;
+            var cardString = new StringBuilder();
             var zamName = card.name.ToLower().Replace(" ", "-");
-            var cardClass = ReCapitilize(card.card_class);
             card.text = CorrectCardText(card.text);
-
-            var cardSet = card.set;
-            if (Tables.BlockNameCorrection.ContainsKey(cardSet))
-            {
-                cardSet = Tables.BlockNameCorrection[cardSet];
-            }
-
-            var block = "Unknown";
-            if (Tables.Block.ContainsKey(cardSet))
-            {
-                block = Tables.Block[cardSet];
-            }
-
-            var format = "Wild";
-            if (Tables.StandardLegal.Contains(block))
-            {
-                format = "Standard";
-            }
-
+            
             card.text = card.text.Replace("\n", " ");
+
+            cardString.Append($"[<http://www.hearthhead.com/cards/{zamName}>] {card.name}\n");
 
             switch (card.type)
             {
                 case "MINION":
-                    cardText = string.Format("[{7}] [{8}] http://www.hearthhead.com/cards/{5}\n {9}",
-                                            card.name, card.attack, card.health, card.cost, card.text, zamName, cardClass, cardSet, format, card.cardImage);
+                    cardText = $"[{card.rarity.CapitalizeOnlyFirstLetter()}] {(card.card_class ?? "Neutral").CapitalizeOnlyFirstLetter()} {(card.race ?? "-").CapitalizeOnlyFirstLetter()} Minion: {card.attack}/{card.health} for {card.cost} mana. \n ```{card.text}```\n";
+                    break;
+                case "HERO":
+                    cardText = $"[{card.rarity.CapitalizeOnlyFirstLetter()}] {(card.card_class ?? "Neutral").CapitalizeOnlyFirstLetter()} Hero: {card.cost} mana.\n ```{card.text}```\n";
                     break;
                 case "SPELL":
-                    cardText = string.Format("[{5}] [{6}] http://www.hearthhead.com/cards/{3}\n {7}",
-                                            card.name, card.cost, card.text, zamName, cardClass, cardSet, format, card.cardImage);
+                    cardText = $"[{card.rarity.CapitalizeOnlyFirstLetter()}] {(card.card_class ?? "Neutral").CapitalizeOnlyFirstLetter()} Spell: {card.cost} mana.\n ```{card.text}```\n";
                     break;
                 case "WEAPON":
-                    cardText = string.Format("[{6}] [{7}] http://www.hearthhead.com/cards/{4}\n {8}",
-                                             card.name, card.attack, card.durability, card.cost, zamName, cardClass, cardSet, format, card.cardImage);
-
-                    if (!string.IsNullOrWhiteSpace(card.text))
-                    {
-                        cardText += " - " + card.text;
-                    }
+                    cardText =  $"[{card.rarity.CapitalizeOnlyFirstLetter()}] {(card.card_class ?? "Neutral").CapitalizeOnlyFirstLetter()} Weapon: {card.attack}/{card.durability} for {card.cost}\n ```{card.text}```\n";
                     break;
                 default:
-                    cardText = string.Format("" +
-                                             "[{4}] [{5}] http://www.hearthhead.com/cards/{3}\n {6}",
-                                             card.name, card.cost, card.text, zamName, card.set, block, card.cardImage);
+                    cardText = $"[{card.rarity.CapitalizeOnlyFirstLetter()}] {(card.card_class ?? "Neutral").CapitalizeOnlyFirstLetter()} Card: {card.cost} mana.\n ```{card.text}```\n";
                     break;
             }
 
-            return cardText;
+            cardString.Append($"[{card.set.CapitalizeOnlyFirstLetter()}] {cardText}");
+            cardString.Append($"{card.cardImage}\n");
+
+            return cardString.ToString();
         }
 
         private string ReCapitilize(string text)

@@ -28,9 +28,7 @@ namespace PatternSpider_Discord.Plugins.MTG
             var searchString = string.Join(" ", messageParts.Skip(1));
 
             var searchResult = await SearchMagic(searchString);
-
-            Log.Information($"Plugin-MTG: Output - {searchResult}");
-
+            
             await m.Channel.SendMessageAsync(searchResult);
         }
 
@@ -74,20 +72,22 @@ namespace PatternSpider_Discord.Plugins.MTG
                 throw;
             }
 
-            if (cards.Count > 1)
+            if(cards.Count == 1)
+                return CardToString(cards.FirstOrDefault());
+
+            if (cards.Count == 0)
             {
-                return
-                    $"[http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[{searchString}]] Found {cards.Count} results.";
+                return $"Could not find any cards named: {searchString}";
             }
 
-            return CardToString(cards.FirstOrDefault());
+
+            return $"[<http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[{searchString}]>] Found {cards.Count} results.";
+
         }
 
         private static List<MtgCard> ParseJson(string data)
         {
             var jsonData = JsonConvert.DeserializeObject<MtgCards>(data);
-
-            Log.Information($"{jsonData.cards.Count}");
             return jsonData.cards.ToList();
         }
 
@@ -100,6 +100,24 @@ namespace PatternSpider_Discord.Plugins.MTG
             var cardUrl = $"http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={card.multiverseid}";
 
             cardString.Append($"[<{cardUrl}>] {cardName}\n");
+
+            if (card.loyalty != null)
+            {
+                //Card is probably a planeswalker
+                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: {card.loyalty} loyalty for {card.manaCost}\n");
+
+            }
+            else if(!string.IsNullOrWhiteSpace(card.toughness) && !string.IsNullOrWhiteSpace(card.power))
+            {
+                //card is probably some form of creature
+                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: {card.power}/{card.toughness} for {card.manaCost}\n");
+            }
+            else
+            {
+                //default
+                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: costs: {card.manaCost}\n");
+            }
+
             cardString.Append($"```{card.text}```\n");
             cardString.Append($"{cardImage}\n");
 

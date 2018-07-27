@@ -18,6 +18,7 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
         public string faction { get; set; }
         public string type { get; set; }
         public string rarity { get; set; }
+        public string race { get; set; }
         public bool collectible { get; set; }
         public string text { get; set; }
         public string name { get; set; }
