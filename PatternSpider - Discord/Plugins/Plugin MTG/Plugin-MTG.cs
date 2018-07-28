@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 using PatternSpider_Discord.Config;
@@ -17,6 +18,12 @@ namespace PatternSpider_Discord.Plugins.MTG
 {
     public class PluginMTG : IPatternSpiderPlugin
     {
+        protected class DiscordMessage
+        {
+            public string Message;
+            public Embed EmbedData;
+        }
+
         public string Name => "MTG";
         public List<string> Commands => new List<string> { "mtg" };
 
@@ -31,7 +38,12 @@ namespace PatternSpider_Discord.Plugins.MTG
 
             var searchResult = await SearchMagic(searchString);
 
-            await m.Channel.SendMessageAsync(searchResult);
+            if (searchResult.EmbedData == null)
+            {
+                await m.Channel.SendMessageAsync(searchResult.Message);
+            }
+                        
+            await m.Channel.SendMessageAsync("", false, searchResult.EmbedData);
         }
 
         public Task Message(string message, SocketMessage m)
@@ -40,8 +52,10 @@ namespace PatternSpider_Discord.Plugins.MTG
         }
 
 
-        public async Task<string> SearchMagic(string searchString)
+        protected async Task<DiscordMessage> SearchMagic(string searchString)
         {
+            var returnMessage = new DiscordMessage();
+
             List<MtgCard> cards;
             var searchTerm = WebUtility.UrlEncode(searchString.ToLower());
             var searchUrl = $"https://api.magicthegathering.io/v1/cards?name={searchTerm}";
@@ -58,11 +72,16 @@ namespace PatternSpider_Discord.Plugins.MTG
             }
             catch
             {
-                return "Error Occured trying to search for card.";
+                returnMessage.Message = "Error Occured trying to search for card.";
+                return returnMessage;
             }
 
             if (string.IsNullOrWhiteSpace(jsonData))
-                return "No Results found for: " + searchString;
+            {
+                returnMessage.Message = "No Results found for: " + searchString;
+                return returnMessage;
+            }
+                
 
             var errorRegex = @"{""error"":""(.+)""}";
             var errorMatch = Regex.Match(jsonData, errorRegex);
@@ -72,7 +91,8 @@ namespace PatternSpider_Discord.Plugins.MTG
 
                 Log.Warning($"Plugin-MTG: Error while quering magicthegathering.io: {jsonData}");
 
-                return $"Error while looking up MTG Card: {errorString}";                
+                returnMessage.Message = $"Error while looking up MTG Card: {errorString}";
+                return returnMessage;                
             }
 
             try
@@ -87,11 +107,16 @@ namespace PatternSpider_Discord.Plugins.MTG
             }
 
             if (cards.Count == 1)
-                return CardToString(cards.FirstOrDefault());
+            {
+                returnMessage.EmbedData = CardToEmbed(cards.LastOrDefault());
+                return returnMessage;
+            }
+                
 
             if (cards.Count == 0)
             {
-                return $"Could not find any cards named: {searchString}";
+                returnMessage.Message = $"Could not find any cards named: {searchString}";
+                return returnMessage;                
             }
 
             var nameBuffer = cards.FirstOrDefault().name;
@@ -99,18 +124,113 @@ namespace PatternSpider_Discord.Plugins.MTG
             {
                 if( card.name != nameBuffer)
                 {
-                    return $"[<https://scryfall.com/search?q={searchTerm}&unique=cards&as=grid&order=name>] Found {cards.Count} results.";
+                    returnMessage.Message = $"[<https://scryfall.com/search?q={searchTerm}&unique=cards&as=grid&order=name>] Found {cards.Count} results.";
+                    return returnMessage;                    
                 }
                 
             }
 
-            return CardToString(cards.LastOrDefault());
+            returnMessage.EmbedData = CardToEmbed(cards.LastOrDefault());
+            return returnMessage;            
         }
 
         private static List<MtgCard> ParseJson(string data)
         {
             var jsonData = JsonConvert.DeserializeObject<MtgCards>(data);
             return jsonData.cards.ToList();
+        }
+
+        private static Embed CardToEmbed(MtgCard card)
+        {
+            var cardEmbed = new EmbedBuilder();
+
+            var searchTerm = WebUtility.UrlEncode(card.name.ToLower());
+            var cardUrl = $"https://scryfall.com/search?q={searchTerm}&unique=cards&as=grid&order=name";
+
+            var cardImage = card.imageUrl;
+
+            cardEmbed.Title = card.name;
+            cardEmbed.Url = cardUrl;
+            cardEmbed.ThumbnailUrl = cardImage;
+
+            var setField = new EmbedFieldBuilder
+            {
+                Name = "Set",
+                Value = card.setName,
+                IsInline = true
+            };
+
+            var rarityField = new EmbedFieldBuilder
+            {
+                Name = "Rarity",
+                Value = card.rarity,
+                IsInline = true
+
+            };
+
+            var typeField = new EmbedFieldBuilder
+            {
+                Name = "Type",
+                Value = card.type,                
+            };
+
+            cardEmbed.Fields.Add(setField);
+            cardEmbed.Fields.Add(rarityField);
+            cardEmbed.Fields.Add(typeField);
+
+            if (card.loyalty != null)
+            {
+                //Card is probably a planeswalker
+                var loyaltyField = new EmbedFieldBuilder
+                {
+                    Name = "Loyalty",
+                    Value = card.loyalty.ToString(),
+                    IsInline = true,
+                };
+
+                cardEmbed.Fields.Add(loyaltyField);
+
+            }
+            else if (!string.IsNullOrWhiteSpace(card.toughness) && !string.IsNullOrWhiteSpace(card.power))
+            {
+                //card is probably some form of creature
+                var powerField = new EmbedFieldBuilder
+                {
+                    Name = "Power",
+                    Value = card.power,
+                    IsInline = true
+                };
+
+                var toughnessField = new EmbedFieldBuilder
+                {
+                    Name = "Toughness",
+                    Value = card.toughness,
+                    IsInline = true
+                };
+
+                cardEmbed.Fields.Add(powerField);
+                cardEmbed.Fields.Add(toughnessField);
+            }
+
+            var costField = new EmbedFieldBuilder
+            {
+                Name = "Cost",
+                Value = MTG_EmoteTable.ReplaceSymbols(card.manaCost),               
+
+            };
+
+            var textField = new EmbedFieldBuilder
+            {
+                Name = "Text",
+                Value = MTG_EmoteTable.ReplaceSymbols(card.text),
+            };
+
+            cardEmbed.Fields.Add(costField);
+            cardEmbed.Fields.Add(textField);
+
+            cardEmbed.Color = new Color(0x68c7ce);
+
+            return cardEmbed;
         }
 
         private static string CardToString(MtgCard card)
