@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Newtonsoft.Json;
@@ -62,6 +63,17 @@ namespace PatternSpider_Discord.Plugins.MTG
 
             if (string.IsNullOrWhiteSpace(jsonData))
                 return "No Results found for: " + searchString;
+
+            var errorRegex = @"{""error"":""(.+)""}";
+            var errorMatch = Regex.Match(jsonData, errorRegex);
+            if (errorMatch.Success)
+            {
+                var errorString = errorMatch.Groups.FirstOrDefault().ToString();
+
+                Log.Warning($"Plugin-MTG: Error while quering magicthegathering.io: {jsonData}");
+
+                return $"Error while looking up MTG Card: {errorString}";                
+            }
 
             try
             {
