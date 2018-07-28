@@ -14,7 +14,7 @@ namespace PatternSpider_Discord.Plugins.MTG
             {"{R}", "<:manared:472704446720114709>"},
             {"{G}", "<:managreen:472704446749605899>"},
             {"{W}", "<:manawhite:472704446841749514>"},
-            {"{C}", "<:manablue:472704446976229376>"},
+            {"{C}", "<:manac1:472705157025759243>"},
 
             //Snow
             {"{S}", "<:manasnow:472704446862721034>"},
