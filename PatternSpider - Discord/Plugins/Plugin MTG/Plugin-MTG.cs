@@ -92,7 +92,6 @@ namespace PatternSpider_Discord.Plugins.MTG
                 
             }
 
-            Log.Information("end, last or default");
             return CardToString(cards.LastOrDefault());
         }
 
@@ -116,21 +115,21 @@ namespace PatternSpider_Discord.Plugins.MTG
             if (card.loyalty != null)
             {
                 //Card is probably a planeswalker
-                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: {card.loyalty} loyalty for {card.manaCost}\n");
+                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: {card.loyalty} loyalty for {MTG_EmoteTable.ReplaceSymbols(card.manaCost)}\n");
 
             }
             else if(!string.IsNullOrWhiteSpace(card.toughness) && !string.IsNullOrWhiteSpace(card.power))
             {
                 //card is probably some form of creature
-                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: {card.power}/{card.toughness} for {card.manaCost}\n");
+                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: {card.power}/{card.toughness} for {MTG_EmoteTable.ReplaceSymbols(card.manaCost)}\n");
             }
             else
             {
                 //default
-                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: costs: {card.manaCost}\n");
+                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: costs: {MTG_EmoteTable.ReplaceSymbols(card.manaCost)}\n");
             }
 
-            cardString.Append($"```{card.text}```\n");
+            cardString.Append($"*{MTG_EmoteTable.ReplaceSymbols(card.text)}*\n");
             cardString.Append($"{cardImage}\n");
 
             return cardString.ToString();
