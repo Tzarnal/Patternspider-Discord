@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
@@ -231,40 +230,6 @@ namespace PatternSpider_Discord.Plugins.MTG
             cardEmbed.Color = new Color(0x68c7ce);
 
             return cardEmbed;
-        }
-
-        private static string CardToString(MtgCard card)
-        {
-            var cardString = new StringBuilder();
-
-            var cardImage = card.imageUrl;
-            var cardName = card.name;
-            var searchTerm = WebUtility.UrlEncode(card.name.ToLower());
-            var cardUrl = $"https://scryfall.com/search?q={searchTerm}&unique=cards&as=grid&order=name";
-
-            cardString.Append($"[<{cardUrl}>] {cardName}\n");
-
-            if (card.loyalty != null)
-            {
-                //Card is probably a planeswalker
-                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: {card.loyalty} loyalty for {MTG_EmoteTable.ReplaceSymbols(card.manaCost)}\n");
-
-            }
-            else if(!string.IsNullOrWhiteSpace(card.toughness) && !string.IsNullOrWhiteSpace(card.power))
-            {
-                //card is probably some form of creature
-                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: {card.power}/{card.toughness} for {MTG_EmoteTable.ReplaceSymbols(card.manaCost)}\n");
-            }
-            else
-            {
-                //default
-                cardString.Append($"[{card.setName}][{card.rarity}] {card.type}: costs: {MTG_EmoteTable.ReplaceSymbols(card.manaCost)}\n");
-            }
-
-            cardString.Append($"*{MTG_EmoteTable.ReplaceSymbols(card.text)}*\n");
-            cardString.Append($"{cardImage}\n");
-
-            return cardString.ToString();
-        }
+        }        
     }
 }
