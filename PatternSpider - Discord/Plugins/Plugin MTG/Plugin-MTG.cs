@@ -17,6 +17,8 @@ namespace PatternSpider_Discord.Plugins.MTG
 {
     public class PluginMTG : IPatternSpiderPlugin
     {
+        private HttpClient _httpClient;
+
         protected class DiscordMessage
         {
             public string Message;
@@ -29,13 +31,35 @@ namespace PatternSpider_Discord.Plugins.MTG
         public PatternSpiderConfig ClientConfig { get; set; }
         public DiscordSocketClient DiscordClient { get; set; }
 
+
+        public PluginMTG()
+        {
+            _httpClient = new HttpClient();
+
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            _httpClient.Timeout = TimeSpan.FromSeconds(2);
+        }
+
         public async Task Command(string command, string message, SocketMessage m)
         {
             var text = message.Trim();
             var messageParts = text.Split(' ');
             var searchString = string.Join(" ", messageParts.Skip(1));
 
-            var searchResult = await SearchMagic(searchString);
+            DiscordMessage searchResult;
+
+            try
+            {
+                searchResult = await SearchMagic(searchString);
+                
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Plugin-MTG: Encountered an error searching for the following {searchString}");
+                await m.Channel.SendMessageAsync($"Encountered an unexpected problem trying to search for card {searchString}.");
+                return;
+            }
+            
 
             if (searchResult.EmbedData == null)
             {
@@ -60,20 +84,20 @@ namespace PatternSpider_Discord.Plugins.MTG
             var searchUrl = $"https://api.magicthegathering.io/v1/cards?name={searchTerm}";
             string jsonData;
 
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Accept.Clear();
+            var stringTask = _httpClient.GetStringAsync(searchUrl);
 
-            var stringTask = client.GetStringAsync(searchUrl);
-            
             try
             {
                 jsonData = await stringTask;
             }
-            catch
+            catch(Exception e)
             {
                 returnMessage.Message = "Error Occured trying to search for card.";
+                Log.Information(e,"Plugin-MTG: HttpClient exception.");
                 return returnMessage;
             }
+
+                
 
             if (string.IsNullOrWhiteSpace(jsonData))
             {
