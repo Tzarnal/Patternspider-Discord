@@ -100,7 +100,7 @@ namespace PatternSpider_Discord.Plugins.Sentience
                 return;
             }
 
-            if (message.Split(' ').Length > _settings.WindowSize)
+            if (message[0] != ClientConfig.CommandSymbol && message.Split(' ').Length > _settings.WindowSize)
             {
                 message = TextSanitizer.SanitizeInput(message);
                 brain.Learn(message);
