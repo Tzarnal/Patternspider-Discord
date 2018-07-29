@@ -15,6 +15,8 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
 {
     class PluginHearthstone : IPatternSpiderPlugin
     {
+        private HttpClient _httpClient;
+
         protected class DiscordMessage
         {
             public string Message;
@@ -26,6 +28,14 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
 
         public PatternSpiderConfig ClientConfig { get; set; }
         public DiscordSocketClient DiscordClient { get; set; }
+
+        public PluginHearthstone()
+        {
+            _httpClient = new HttpClient();
+
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            _httpClient.Timeout = TimeSpan.FromSeconds(2);
+        }
 
         public async Task Command(string command, string message, SocketMessage m)
         {
@@ -56,18 +66,16 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
 
             var returnMessage = new DiscordMessage();
 
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Accept.Clear();
 
-            var stringTask = client.GetStringAsync(searchUrl);
+            var stringTask = _httpClient.GetStringAsync(searchUrl);
 
             try
             {
                 jsonData = await stringTask;
             }
-            catch
+            catch (Exception e)
             {
-                returnMessage.Message = "Error Occured trying to search for card.";
+                returnMessage.Message = "Error Occured trying to search for card.";                
                 return returnMessage;
             }
 

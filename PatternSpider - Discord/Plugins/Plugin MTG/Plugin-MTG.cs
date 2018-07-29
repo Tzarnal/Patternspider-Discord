@@ -92,8 +92,7 @@ namespace PatternSpider_Discord.Plugins.MTG
             }
             catch(Exception e)
             {
-                returnMessage.Message = "Error Occured trying to search for card.";
-                Log.Information(e,"Plugin-MTG: HttpClient exception.");
+                returnMessage.Message = "Error Occured trying to search for card.";                
                 return returnMessage;
             }
 
