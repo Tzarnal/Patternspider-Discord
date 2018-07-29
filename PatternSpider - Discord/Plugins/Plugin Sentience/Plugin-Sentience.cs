@@ -21,6 +21,7 @@ namespace PatternSpider_Discord.Plugins.Sentience
         private Chain _brain;
         private readonly object _writeLock;
         private Settings _settings;
+        private StreamWriter _brainFile;
 
         public static string BrainPath = "Data/Sentience/Brain.txt";
 
@@ -55,6 +56,8 @@ namespace PatternSpider_Discord.Plugins.Sentience
 
             PruneBrain();
             LoadBrain();
+
+            _brainFile = File.AppendText(BrainPath);
         }
     
 
@@ -109,19 +112,17 @@ namespace PatternSpider_Discord.Plugins.Sentience
         private void SaveLine(string message)
         {
             lock (_writeLock)
-            {
-                var fs = File.AppendText(BrainPath);
-
+            {                
                 try
                 {
-                    fs.WriteLine(message);
+                    _brainFile.WriteLine(message);
                 }
                 catch (Exception)
                 {
                     Log.Warning("Patternspider - Sentience: Failed to write line to Brain File.");
                 }
 
-                fs.Flush();
+                _brainFile.Flush();
             }
         }
 

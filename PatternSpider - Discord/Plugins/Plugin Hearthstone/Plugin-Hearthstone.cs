@@ -85,6 +85,7 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
             catch (Exception e)
             {
                 Log.Warning("Plugin-Hearthstone: Cannot parse Hearthead API Response. Request: {requestSTring}", searchUrl);
+                Log.Warning("Plugin-Hearthstone: Cannot parse Hearthead API Response. Request: {requestSTring}", searchUrl);
                 Log.Debug(e, "Plugin-Hearthstone: Cannot parse Hearthead API Response. Request: {requestSTring}", searchUrl);
                 throw;
             }
