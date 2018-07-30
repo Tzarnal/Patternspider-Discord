@@ -11,6 +11,7 @@ namespace PatternSpider_Discord.Plugins.Weather
         public string icon { get; set; }
         public double precipIntensity { get; set; }
         public double precipProbability { get; set; }
+        public string precipType { get; set; }
         public double temperature { get; set; }
         public double apparentTemperature { get; set; }
         public double dewPoint { get; set; }
