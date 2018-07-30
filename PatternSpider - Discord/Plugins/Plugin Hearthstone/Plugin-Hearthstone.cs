@@ -17,12 +17,6 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
     {
         private HttpClient _httpClient;
 
-        protected class DiscordMessage
-        {
-            public string Message;
-            public Embed EmbedData;
-        }
-
         public string Name => "Hearthstone";
         public List<string> Commands => new List<string> { "hs" };
 
@@ -43,14 +37,9 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
             var messageParts = text.Split(' ');
             var searchString = string.Join(" ", messageParts.Skip(1));
 
-            var searchResult = await SearchHearthHead(searchString);
+            var resultMesage = await SearchHearthHead(searchString);
 
-            if (searchResult.EmbedData == null)
-            {
-                await m.Channel.SendMessageAsync(searchResult.Message);
-            }
-
-            await m.Channel.SendMessageAsync("", false, searchResult.EmbedData);            
+            await resultMesage.SendMessageToChannel(m.Channel);
         }
 
         public Task Message(string message, SocketMessage m)
@@ -64,27 +53,21 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
             string searchUrl = $"http://hearthstone.services.zam.com/v1/card?sort=cost,name&search={searchString}&cost=0,1,2,3,4,5,6,7,8,9,10&type=MINION,SPELL,WEAPON,HERO&collectible=true";
             string jsonData;
 
-            var returnMessage = new DiscordMessage();
-
-
             var stringTask = _httpClient.GetStringAsync(searchUrl);
 
             try
             {
                 jsonData = await stringTask;
             }
-            catch (Exception e)
-            {
-                returnMessage.Message = "Error Occured trying to search for card.";                
-                return returnMessage;
+            catch
+            {                
+                return new DiscordMessage("Error Occured trying to search for card.");
             }
 
             if (string.IsNullOrWhiteSpace(jsonData))
             {
-                returnMessage.Message = "No Results found for: " + searchString;
-                return returnMessage;
+                return new DiscordMessage("No Results found for: " + searchString);
             }                
-
 
             try
             {
@@ -99,22 +82,18 @@ namespace PatternSpider_Discord.Plugins.Hearthstone
             }
 
             if (cards.Count == 0)
-            {
-                returnMessage.Message = $"could not find any cards named: {searchString}";
-                return returnMessage;                
+            {                
+                return new DiscordMessage($"could not find any cards named: {searchString}");
             }
 
             if (cards.Count == 1)
             {
                 var card = cards[0];
 
-                returnMessage.EmbedData = CardToEmbed(card);
-                return returnMessage;
+                return new DiscordMessage(CardToEmbed(card));
             }
-
-            
-            returnMessage.Message = $"[<https://www.hearthpwn.com/cards?filter-name={searchString}&filter-premium=1&display=3>] Found {cards.Count} results.";
-            return returnMessage;            
+           
+            return new DiscordMessage($"[<https://www.hearthpwn.com/cards?filter-name={searchString}&filter-premium=1&display=3>] Found {cards.Count} results.");
         }
 
         private static List<Card> ParseJson(string data)

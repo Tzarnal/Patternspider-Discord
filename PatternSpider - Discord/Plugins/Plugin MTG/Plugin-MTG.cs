@@ -19,12 +19,6 @@ namespace PatternSpider_Discord.Plugins.MTG
     {
         private HttpClient _httpClient;
 
-        protected class DiscordMessage
-        {
-            public string Message;
-            public Embed EmbedData;
-        }
-
         public string Name => "MTG";
         public List<string> Commands => new List<string> { "mtg" };
 
@@ -46,11 +40,11 @@ namespace PatternSpider_Discord.Plugins.MTG
             var messageParts = text.Split(' ');
             var searchString = string.Join(" ", messageParts.Skip(1));
 
-            DiscordMessage searchResult;
+            DiscordMessage resultMesage;
 
             try
             {
-                searchResult = await SearchMagic(searchString);
+                resultMesage = await SearchMagic(searchString);
                 
             }
             catch (Exception e)
@@ -59,14 +53,8 @@ namespace PatternSpider_Discord.Plugins.MTG
                 await m.Channel.SendMessageAsync($"Encountered an unexpected problem trying to search for card {searchString}.");
                 return;
             }
-            
 
-            if (searchResult.EmbedData == null)
-            {
-                await m.Channel.SendMessageAsync(searchResult.Message);
-            }
-                        
-            await m.Channel.SendMessageAsync("", false, searchResult.EmbedData);
+            await resultMesage.SendMessageToChannel(m.Channel);
         }
 
         public Task Message(string message, SocketMessage m)
@@ -76,9 +64,7 @@ namespace PatternSpider_Discord.Plugins.MTG
 
 
         protected async Task<DiscordMessage> SearchMagic(string searchString)
-        {
-            var returnMessage = new DiscordMessage();
-
+        {            
             List<MtgCard> cards;
             var searchTerm = WebUtility.UrlEncode(searchString.ToLower());
             var searchUrl = $"https://api.magicthegathering.io/v1/cards?name={searchTerm}";
@@ -90,18 +76,14 @@ namespace PatternSpider_Discord.Plugins.MTG
             {
                 jsonData = await stringTask;
             }
-            catch(Exception e)
+            catch
             {
-                returnMessage.Message = "Error Occured trying to search for card.";                
-                return returnMessage;
+                return new DiscordMessage("Error Occured trying to search for card.");
             }
-
                 
-
             if (string.IsNullOrWhiteSpace(jsonData))
-            {
-                returnMessage.Message = "No Results found for: " + searchString;
-                return returnMessage;
+            {                
+                return new DiscordMessage("No Results found for: " + searchString);
             }
                 
 
@@ -112,9 +94,8 @@ namespace PatternSpider_Discord.Plugins.MTG
                 var errorString = errorMatch.Groups.FirstOrDefault().ToString();
 
                 Log.Warning($"Plugin-MTG: Error while quering magicthegathering.io: {jsonData}");
-
-                returnMessage.Message = $"Error while looking up MTG Card: {errorString}";
-                return returnMessage;                
+            
+                return new DiscordMessage($"Error while looking up MTG Card: {errorString}");
             }
 
             try
@@ -130,30 +111,26 @@ namespace PatternSpider_Discord.Plugins.MTG
 
             if (cards.Count == 1)
             {
-                returnMessage.EmbedData = CardToEmbed(cards.LastOrDefault());
-                return returnMessage;
+                return new DiscordMessage(CardToEmbed(cards.LastOrDefault()));                
             }
                 
 
             if (cards.Count == 0)
             {
-                returnMessage.Message = $"Could not find any cards named: {searchString}";
-                return returnMessage;                
+                return new DiscordMessage($"Could not find any cards named: {searchString}");
             }
 
             var nameBuffer = cards.FirstOrDefault().name;
             foreach (var card in cards)
             {
                 if( card.name != nameBuffer)
-                {
-                    returnMessage.Message = $"[<https://scryfall.com/search?q={searchTerm}&unique=cards&as=grid&order=name>] Found {cards.Count} results.";
-                    return returnMessage;                    
+                {                
+                    return new DiscordMessage($"[<https://scryfall.com/search?q={searchTerm}&unique=cards&as=grid&order=name>] Found {cards.Count} results.");
                 }
                 
             }
-
-            returnMessage.EmbedData = CardToEmbed(cards.LastOrDefault());
-            return returnMessage;            
+            return new DiscordMessage( CardToEmbed(cards.LastOrDefault()) );
+        
         }
 
         private static List<MtgCard> ParseJson(string data)
